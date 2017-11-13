@@ -95,7 +95,7 @@ defmodule HiveService do
 
   defp api_token do
     System.get_env("HIVE_API_TOKEN") ||
-    Application.get_env(:explo, :hive_api_token)
+    Application.get_env(:hive_service, :hive_api_token)
   end
 
   defp api_url do
