@@ -130,8 +130,8 @@ defmodule HiveService do
 
   defp headers do
     [
-      "User-Agent": "EXPLO HiveService",
-      "Content-Type": "application/x-www-form-urlencoded"
+      {"User-Agent", "EXPLO HiveService"},
+      {"Content-Type", "application/x-www-form-urlencoded"}
     ]
   end
 
