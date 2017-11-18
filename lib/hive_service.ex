@@ -46,8 +46,9 @@ defmodule HiveService do
   unseen by the given `receipts`, or receiving application. You can pass only
   an `application` to match, or optionally include `context` and/or `process`.
   """
-  @spec get_unseen_atoms(String.t() | nil, String.t() | nil, 
-      String.t() | nil, String.t() | nil) :: HTTPoison.Response.t()
+  @spec get_unseen_atoms(
+      String.t() | nil, String.t() | nil, String.t() | nil, String.t() | nil
+    ) :: HTTPoison.Response.t()
   def get_unseen_atoms(receipts, application, context, process) do
     params = %{
       token: api_token(),

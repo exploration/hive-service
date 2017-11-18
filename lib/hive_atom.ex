@@ -21,6 +21,7 @@ defmodule HiveAtom do
 
   In the event of decode error, return an empty map.
   """
+  @spec data_map(%HiveAtom{}) :: Poison.Parser.t() | no_return() | map()
   def data_map(atom = %HiveAtom{}) do
     try do
       Poison.decode!(atom.data)
@@ -35,6 +36,7 @@ defmodule HiveAtom do
 
   Returns a `%HiveAtom{}` struct.
   """
+  @spec from_map(map()) :: %HiveAtom{}
   def from_map(atom_map) when is_map(atom_map) do
     %HiveAtom{
       application: key_variants(atom_map, :application),
@@ -48,12 +50,6 @@ defmodule HiveAtom do
     }
   end
 
-  # Return a map value regardless of whether it's passed as an atom or a
-  # string.
-  defp key_variants(map, key) when is_atom(key) do
-    Map.get(map, key) || Map.get(map, Atom.to_string(key)) 
-  end
-
   @doc """
   When working with HiveAtoms, we often refer to the "triplet", which is the
   combination of `application`, `context`, and `process` that uniquely
@@ -62,8 +58,17 @@ defmodule HiveAtom do
 
   This function returns a 3-tuple: `{application, context, process}`
   """
+  @spec triplet(%HiveAtom{}) :: {String.t(), String.t(), String.t()}
   def triplet(atom = %HiveAtom{}) do
     {atom.application, atom.context, atom.process}
+  end
+  
+
+
+  # Return a map value regardless of whether it's passed as an atom or a
+  # string.
+  defp key_variants(map, key) when is_atom(key) do
+    Map.get(map, key) || Map.get(map, Atom.to_string(key)) 
   end
 end
 
