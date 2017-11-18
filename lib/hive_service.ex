@@ -24,7 +24,7 @@ defmodule HiveService do
   See `HiveService.get_unseen_atoms/3` for more details about the usage of this
   function in general.
   """ 
-  @spec get_unseen_atoms(String.t(), {String.t(), String.t(), String.t()}) ::
+  @spec get_unseen_atoms(String.t(), HiveAtom.triplet()) ::
     HTTPoison.Response.t()
   def get_unseen_atoms(receipts, {application, context, process}) do
     get_unseen_atoms(receipts, application, context, process)

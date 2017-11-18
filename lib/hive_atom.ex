@@ -9,6 +9,20 @@ defmodule HiveAtom do
   this code.
   """ 
 
+
+  ### TYPES ###
+
+  @typedoc """
+    A "triplet" is a fundamental unit of a HIVE Atom: it is the application,
+    context, and process that created the atom. For example, a atom created by
+    Portico, where a user is updated might have the triplet signature
+    `{"portico", "user", "update"}`.
+  """
+  @type triplet :: {String.t(), String.t(), String.t()}
+
+
+  ### STRUCTS ###
+
   defstruct [
     :application, :context, :process,
     :data,
@@ -16,6 +30,9 @@ defmodule HiveAtom do
     :id, :created_at, :updated_at
   ]
 
+
+  ### FUNCTIONS ###
+  
   @doc """
   Return a given HiveAtom's data, as a `Map`.
 
@@ -56,9 +73,9 @@ defmodule HiveAtom do
   identifies the source of the atom. It's handy to be able to grab those
   triplets quickly.
 
-  This function returns a 3-tuple: `{application, context, process}`
+  This function returns a triplet (see the triplet() type above)
   """
-  @spec triplet(%HiveAtom{}) :: {String.t(), String.t(), String.t()}
+  @spec triplet(%HiveAtom{}) :: triplet()
   def triplet(atom = %HiveAtom{}) do
     {atom.application, atom.context, atom.process}
   end
