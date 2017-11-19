@@ -129,16 +129,17 @@ defmodule HiveService do
 
   defp run_unless_auth_error(response, fun) do
     case response.status_code == 401 or
-          response.body 
-          |> String.downcase 
-          |> String.contains?("unauthorized") do
+        response.body 
+        |> String.downcase 
+        |> String.contains?("unauthorized") do
       true -> {:error, :authentication}
       false -> fun.(response)
     end
   end
 
   defp delete(endpoint, body) do
-    HTTPoison.request!(:delete, endpoint, body, headers())
+    :delete
+    |> HTTPoison.request!(endpoint, body, headers())
     |> run_unless_auth_error(fn response ->
         Poison.decode!(response.body)
       end)
@@ -152,9 +153,11 @@ defmodule HiveService do
   end
 
   defp post(endpoint, body) do
-    HTTPoison.post!(endpoint, body, headers())
+    endpoint
+    |> HTTPoison.post!(body, headers())
     |> run_unless_auth_error(fn response ->
-        Poison.decode!(response.body)
+        response.body
+        |> Poison.decode!
         |> convert_maps_to_hiveatoms()
       end)
   end
