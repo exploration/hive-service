@@ -21,6 +21,8 @@ defmodule HiveService.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:poison, "~> 3.1"},
       {:httpoison, "~> 0.13"}
     ]
