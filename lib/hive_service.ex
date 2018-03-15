@@ -8,7 +8,7 @@ defmodule HiveService do
   @doc """
   Deletes a HiveAtom from HIVE permanently.  
   """
-  @spec delete_atom(integer()) :: HTTPoison.Response.t()
+  @spec delete_atom(integer()) :: map()
   def delete_atom(atom_id) do
     body = URI.encode_query %{token: api_token()}
     endpoint = "#{api_url()}/atoms/#{atom_id}"
@@ -24,19 +24,17 @@ defmodule HiveService do
   See `HiveService.get_unseen_atoms/3` for more details about the usage of this
   function in general.
   """ 
-  @spec get_unseen_atoms(String.t(), HiveAtom.triplet()) ::
-    HTTPoison.Response.t()
+  @spec get_unseen_atoms(String.t(), HiveAtom.triplet()) :: [HiveAtom.t()]
   def get_unseen_atoms(receipts, {application, context, process}) do
     get_unseen_atoms(receipts, application, context, process)
   end
 
-  @spec get_unseen_atoms(String.t(), String.t()) :: HTTPoison.Response.t()
+  @spec get_unseen_atoms(String.t(), String.t()) :: [HiveAtom.t()]
   def get_unseen_atoms(receipts, application) do
     get_unseen_atoms(receipts, application, nil, nil)
   end
 
-  @spec get_unseen_atoms(String.t(), String.t(), String.t()) ::
-    HTTPoison.Response.t()
+  @spec get_unseen_atoms(String.t(), String.t(), String.t()) :: [HiveAtom.t()]
   def get_unseen_atoms(receipts, application, context) do
     get_unseen_atoms(receipts, application, context, nil)
   end
@@ -48,7 +46,7 @@ defmodule HiveService do
   """
   @spec get_unseen_atoms(
       String.t() | nil, String.t() | nil, String.t() | nil, String.t() | nil
-    ) :: HTTPoison.Response.t()
+    ) :: [HiveAtom.t()]
   def get_unseen_atoms(receipts, application, context, process) do
     params = %{
       token: api_token(),
@@ -67,8 +65,7 @@ defmodule HiveService do
   @doc """
   Add a HiveAtom to HIVE
   """
-  @spec post_atom(String.t(), String.t(), String.t(), String.t()) ::
-    HTTPoison.Response.t()
+  @spec post_atom(String.t(), String.t(), String.t(), String.t()) :: HiveAtom.t()
   def post_atom(application, context, process, data) do
     body = URI.encode_query %{
       token: api_token(),
@@ -88,7 +85,7 @@ defmodule HiveService do
   can get a list of "unseen" atoms - you mark every atom that you've processed
   as "received".
   """
-  @spec put_receipt(integer(), String.t()) :: HTTPoison.Response.t()
+  @spec put_receipt(integer(), String.t()) :: HiveAtom.t()
   def put_receipt(atom_id, application) do
     body = URI.encode_query %{
       token: api_token(),
@@ -98,8 +95,6 @@ defmodule HiveService do
 
     post(endpoint, body)
   end
-
-
 
   defp put_if_not_nil(map, key, value) when is_map(map) do
     case value do
