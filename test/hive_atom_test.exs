@@ -30,7 +30,7 @@ defmodule HiveAtomTest do
 
   describe "atoms" do 
     test "getting the triplet", %{atom: atom} do
-      expected_triplet = {"test_app","test_context","test_process"}
+      expected_triplet = {"test_app", "test_context", "test_process"}
       assert HiveAtom.triplet(atom) == expected_triplet
     end
 
