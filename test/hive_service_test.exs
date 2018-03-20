@@ -39,6 +39,19 @@ defmodule HiveServiceTest do
       assert %{"success" => true} = delete_result
     end
 
+    test "sending + receiving wacky characters", %{atom: atom} do
+      test_string = "🖤äéíøü🤷😂"
+      returned_atom = HiveService.post_atom(
+        test_string,
+        atom.context,
+        atom.process,
+        atom.data
+      ) 
+
+      assert returned_atom.application == test_string
+      HiveService.delete_atom(returned_atom.id)
+    end
+
     test "finding unseen atoms", %{atom: atom} do
       atoms =
         Enum.map(1..3, fn _ ->
