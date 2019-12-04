@@ -59,6 +59,14 @@ defmodule HiveAtom do
   end
 
   @doc """
+  Utility function to get the creation date as a NaiveDateTime
+  """
+  @spec created_at(HiveAtom.t()) :: NaiveDateTime.t()
+  def created_at(atom) do
+    NaiveDateTime.from_iso8601!(atom.created_at)
+  end
+
+  @doc """
   Convert an Elixir map into a HiveAtom, as best as is possible. Any fields
   that aren't in the `%HiveAtom{}` struct will be ignored.
 
@@ -89,6 +97,14 @@ defmodule HiveAtom do
   @spec triplet(HiveAtom.t()) :: triplet()
   def triplet(atom = %HiveAtom{}) do
     {atom.application, atom.context, atom.process}
+  end
+
+  @doc """
+  Utility function to get the updated date as a NaiveDateTime
+  """
+  @spec updated_at(HiveAtom.t()) :: NaiveDateTime.t()
+  def updated_at(atom) do
+    NaiveDateTime.from_iso8601!(atom.updated_at)
   end
   
 
