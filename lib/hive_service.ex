@@ -22,7 +22,6 @@ defmodule HiveService do
   @spec get_atom(integer()) :: map()
   def get_atom(atom_id) do
     endpoint = "#{api_url()}/atoms/#{atom_id}?#{URI.encode_query %{token: api_token()}}"
-    IO.puts endpoint
 
     get(endpoint)
   end
