@@ -17,6 +17,17 @@ defmodule HiveService do
   end
 
   @doc """
+  Given an atom ID, return the atom from HIVE
+  """
+  @spec get_atom(integer()) :: map()
+  def get_atom(atom_id) do
+    endpoint = "#{api_url()}/atoms/#{atom_id}?#{URI.encode_query %{token: api_token()}}"
+    IO.puts endpoint
+
+    get(endpoint)
+  end
+
+  @doc """
   This variant of get_unseen_atoms is handy when you've already got a
   %HiveAtom{} struct and thus can use the HiveAtom.triplet() function to
   extract its triplet.
@@ -145,6 +156,13 @@ defmodule HiveService do
       {"User-Agent", "EXPLO HiveService"},
       {"Content-Type", "application/x-www-form-urlencoded"}
     ]
+  end
+
+  defp get(endpoint) do
+    HTTPoison.get!(endpoint, headers())
+    |> run_unless_auth_error(fn response ->
+        Poison.decode!(response.body)
+      end)
   end
 
   defp post(endpoint, body) do
