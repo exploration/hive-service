@@ -4,7 +4,7 @@ defmodule HiveService.Mixfile do
   def project do
     [
       app: :hive_service,
-      version: "0.1.9-p2",
+      version: "0.1.9-p3",
       elixir: "~> 1.7",
       start_permanent: Mix.env == :prod,
       deps: deps()
@@ -23,7 +23,7 @@ defmodule HiveService.Mixfile do
     [
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:httpoison, "~> 0.13"},
+      {:httpoison, "~> 1.6"},
       {:jason, "~> 1.2"}
     ]
   end
