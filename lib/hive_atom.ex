@@ -49,10 +49,10 @@ defmodule HiveAtom do
 
   In the event of decode error, return an empty map.
   """
-  @spec data_map(HiveAtom.t()) :: Poison.Parser.t() | no_return() | map()
+  @spec data_map(HiveAtom.t()) :: term() | no_return()
   def data_map(atom = %HiveAtom{}) do
     try do
-      Poison.decode!(atom.data)
+      Jason.decode!(atom.data)
     rescue
       _ -> %{}
     end
