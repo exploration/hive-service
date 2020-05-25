@@ -73,6 +73,13 @@ defmodule HiveService do
   end
 
   @doc """
+  Check for a valid API token, so that we can use the presence of a token in the environment to determine whether automated tests hit an external API.
+  """
+  def has_token? do
+    String.valid? api_token()
+  end
+
+  @doc """
   Add a HiveAtom to HIVE
   """
   @spec post_atom(String.t(), String.t(), String.t(), String.t()) :: HiveAtom.t()

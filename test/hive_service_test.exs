@@ -16,6 +16,13 @@ defmodule HiveServiceTest do
     }
   end
 
+  describe "meta" do
+    test "token check" do
+      # this should be true because of our test config
+      assert HiveService.has_token?
+    end
+  end
+
   describe "methods" do
     test "post, receive, delete", %{atom: atom} do
       new_atom =
