@@ -1,7 +1,6 @@
 defmodule HiveService do
-
   @moduledoc """
-  HiveService is a group of utilities for posting + retrieving atoms from
+  Utilities for posting + retrieving atoms from
   EXPLO's [HIVE](https://bitbucket.org/explo/hive-2) service.
   """
 
@@ -10,7 +9,7 @@ defmodule HiveService do
   """
   @spec delete_atom(integer()) :: map()
   def delete_atom(atom_id) do
-    body = URI.encode_query %{token: api_token()}
+    body = URI.encode_query(%{token: api_token()})
     endpoint = "#{api_url()}/atoms/#{atom_id}"
 
     delete(endpoint, body)
@@ -21,19 +20,21 @@ defmodule HiveService do
   """
   @spec get_atom(integer()) :: map()
   def get_atom(atom_id) do
-    endpoint = "#{api_url()}/atoms/#{atom_id}?#{URI.encode_query %{token: api_token()}}"
+    endpoint = "#{api_url()}/atoms/#{atom_id}?#{URI.encode_query(%{token: api_token()})}"
 
     get(endpoint)
   end
 
   @doc """
+  Get unseen atoms from HIVE by triplet.
+
   This variant of get_unseen_atoms is handy when you've already got a
   %HiveAtom{} struct and thus can use the HiveAtom.triplet() function to
   extract its triplet.
 
   See `HiveService.get_unseen_atoms/3` for more details about the usage of this
   function in general.
-  """ 
+  """
   @spec get_unseen_atoms(String.t(), HiveAtom.triplet()) :: [HiveAtom.t()]
   def get_unseen_atoms(receipts, {application, context, process}) do
     get_unseen_atoms(receipts, application, context, process)
@@ -50,33 +51,41 @@ defmodule HiveService do
   end
 
   @doc """
-  This is a HIVE search, which should return a list of HiveAtoms that are
-  unseen by the given `receipts`, or receiving application. You can pass only
-  an `application` to match, or optionally include `context` and/or `process`.
+  Search HIVE for atoms not seen by the `receipts` application.
+
+  You can pass only an `application` to match, or optionally include `context`
+  and/or `process`.
   """
   @spec get_unseen_atoms(
-      String.t() | nil, String.t() | nil, String.t() | nil, String.t() | nil
-    ) :: [HiveAtom.t()]
+          String.t() | nil,
+          String.t() | nil,
+          String.t() | nil,
+          String.t() | nil
+        ) :: [HiveAtom.t()]
   def get_unseen_atoms(receipts, application, context, process) do
     params = %{
       token: api_token(),
       receipts: receipts,
       application: application
     }
+
     params = put_if_not_nil(params, :context, context)
     params = put_if_not_nil(params, :process, process)
 
     body = URI.encode_query(params)
     endpoint = "#{api_url()}/atom_search"
-    
+
     post(endpoint, body)
   end
 
   @doc """
-  Check for a valid API token, so that we can use the presence of a token in the environment to determine whether automated tests hit an external API.
+  Check for a valid API token. 
+
+  We can use the presence of a token in the environment to determine whether
+  automated tests hit an external API.
   """
   def has_token? do
-    String.valid? api_token()
+    String.valid?(api_token())
   end
 
   @doc """
@@ -84,13 +93,14 @@ defmodule HiveService do
   """
   @spec post_atom(String.t(), String.t(), String.t(), String.t()) :: HiveAtom.t()
   def post_atom(application, context, process, data) do
-    body = URI.encode_query %{
-      token: api_token(),
-      application: application,
-      context: context,
-      process: process,
-      data: data
-    }
+    body =
+      URI.encode_query(%{
+        token: api_token(),
+        application: application,
+        context: context,
+        process: process,
+        data: data
+      })
 
     endpoint = "#{api_url()}/atoms"
 
@@ -98,16 +108,19 @@ defmodule HiveService do
   end
 
   @doc """
-  Mark a given atom as having been received by `application`. This is how you
-  can get a list of "unseen" atoms - you mark every atom that you've processed
-  as "received".
+  Mark a given atom as having been received by `application`. 
+
+  This is how you can get a list of "unseen" atoms - you mark every atom that
+  you've processed as "received".
   """
   @spec put_receipt(integer(), String.t()) :: HiveAtom.t()
   def put_receipt(atom_id, application) do
-    body = URI.encode_query %{
-      token: api_token(),
-      application: application
-    }
+    body =
+      URI.encode_query(%{
+        token: api_token(),
+        application: application
+      })
+
     endpoint = "#{api_url()}/atoms/#{atom_id}/receipts"
 
     post(endpoint, body)
@@ -121,14 +134,12 @@ defmodule HiveService do
   end
 
   defp api_token do
-    System.get_env("HIVE_API_TOKEN") ||
     Application.get_env(:hive_service, :hive_api_token)
   end
 
   defp api_url do
-    System.get_env("HIVE_API_URL") ||
     Application.get_env(:hive_service, :hive_api_url) ||
-    "https://hive.explo.org"
+      "https://hive.explo.org"
   end
 
   defp convert_maps_to_hiveatoms(map_list) when is_list(map_list) do
@@ -141,9 +152,9 @@ defmodule HiveService do
 
   defp run_unless_auth_error(response, fun) do
     case response.status_code == 401 or
-        response.body 
-        |> String.downcase 
-        |> String.contains?("unauthorized") do
+           response.body
+           |> String.downcase()
+           |> String.contains?("unauthorized") do
       true -> {:error, :authentication}
       false -> fun.(response)
     end
@@ -153,8 +164,8 @@ defmodule HiveService do
     :delete
     |> HTTPoison.request!(endpoint, body, headers())
     |> run_unless_auth_error(fn response ->
-        Jason.decode!(response.body)
-      end)
+      Jason.decode!(response.body)
+    end)
   end
 
   defp headers() do
@@ -167,19 +178,17 @@ defmodule HiveService do
   defp get(endpoint) do
     HTTPoison.get!(endpoint, headers())
     |> run_unless_auth_error(fn response ->
-        Jason.decode!(response.body)
-      end)
+      Jason.decode!(response.body)
+    end)
   end
 
   defp post(endpoint, body) do
     endpoint
     |> HTTPoison.post!(body, headers())
     |> run_unless_auth_error(fn response ->
-        response.body
-        |> Jason.decode!
-        |> convert_maps_to_hiveatoms()
-      end)
+      response.body
+      |> Jason.decode!()
+      |> convert_maps_to_hiveatoms()
+    end)
   end
-
 end
-
