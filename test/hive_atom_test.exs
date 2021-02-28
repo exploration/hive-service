@@ -2,7 +2,7 @@ defmodule HiveAtomTest do
   use ExUnit.Case, async: true
 
   setup do
-    { 
+    {
       :ok,
       atom: %HiveAtom{
         application: "test_app",
@@ -34,7 +34,7 @@ defmodule HiveAtomTest do
     }
   end
 
-  describe "atoms" do 
+  describe "atoms" do
     test "getting the triplet", %{atom: atom} do
       expected_triplet = {"test_app", "test_context", "test_process"}
       assert HiveAtom.triplet(atom) == expected_triplet
@@ -50,7 +50,7 @@ defmodule HiveAtomTest do
     end
 
     test "converting a map with atom keys to an atom",
-        %{atom: atom, atom_map_atom_keys: atom_map_atom_keys} do
+         %{atom: atom, atom_map_atom_keys: atom_map_atom_keys} do
       assert HiveAtom.from_map(atom_map_atom_keys) == atom
     end
 
@@ -67,4 +67,3 @@ defmodule HiveAtomTest do
     end
   end
 end
-

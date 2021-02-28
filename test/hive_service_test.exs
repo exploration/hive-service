@@ -1,7 +1,10 @@
 defmodule HiveServiceTest do
   use ExUnit.Case
 
-  IO.puts("Make sure you've got your HIVE test server running!")
+  IO.puts(
+    IO.ANSI.yellow_background() <>
+      IO.ANSI.black() <> "Make sure you've got your HIVE test server running!" <> IO.ANSI.reset()
+  )
 
   setup do
     {
@@ -19,7 +22,7 @@ defmodule HiveServiceTest do
   describe "meta" do
     test "token check" do
       # this should be true because of our test config
-      assert HiveService.has_token?
+      assert HiveService.has_token?()
     end
   end
 
@@ -48,12 +51,14 @@ defmodule HiveServiceTest do
 
     test "sending + receiving wacky characters", %{atom: atom} do
       test_string = "🖤äéíøü🤷😂"
-      returned_atom = HiveService.post_atom(
-        test_string,
-        atom.context,
-        atom.process,
-        atom.data
-      ) 
+
+      returned_atom =
+        HiveService.post_atom(
+          test_string,
+          atom.context,
+          atom.process,
+          atom.data
+        )
 
       assert returned_atom.application == test_string
       HiveService.delete_atom(returned_atom.id)
