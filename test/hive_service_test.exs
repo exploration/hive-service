@@ -45,6 +45,9 @@ defmodule HiveServiceTest do
       received_atom = HiveService.put_receipt(new_atom.id, "test")
       assert received_atom.receipts == "test"
 
+      received_atom = HiveService.delete_receipt(new_atom.id, "test")
+      assert received_atom.receipts == nil
+
       delete_result = HiveService.delete_atom(new_atom.id)
       assert %{"success" => true} = delete_result
     end

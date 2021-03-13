@@ -16,6 +16,19 @@ defmodule HiveService do
   end
 
   @doc """
+  Un-mark a given atom as having been received by `application`. 
+  """
+  @spec delete_receipt(integer(), String.t()) :: HiveAtom.t()
+  def delete_receipt(atom_id, application) do
+    body = URI.encode_query(%{token: api_token()})
+    endpoint = "#{api_url()}/atoms/#{atom_id}/receipts/#{application}"
+
+    delete(endpoint, body)
+    |> convert_maps_to_hiveatoms()
+  end
+
+
+  @doc """
   Given an atom ID, return the atom from HIVE
   """
   @spec get_atom(integer()) :: map()
