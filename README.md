@@ -10,7 +10,7 @@ The package can be installed by adding `hive_service` to your list of dependenci
 ```elixir
 def deps do
   [
-    {:hive_service, git: "bitbucket.org:explo/hive-service.git"},
+    {:hive_service, git: "github.com:exploration/hive-service.git"},
   ]
 end
 ```
