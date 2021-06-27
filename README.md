@@ -20,7 +20,12 @@ end
 
 If you're using `HiveService`, you'll very likely want to set the following config var in your application:
 
-    config :hive_service, [
+    config :hive_service, 
       hive_api_token: "your token",
       hive_api_url: "https://hive.explo.org"
-    ]
+    
+    
+We also have a "debug mode", which logs HIVE actions to the console instead of actually sending them. This is common to include in `dev.exs`:
+
+    config :hive_service,
+      debug_mode: true

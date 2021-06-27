@@ -8,6 +8,8 @@ defmodule HiveAtom do
   """
 
   ### STRUCTS ###
+  #
+  @derive {Jason.Encoder, only: [:application, :context, :process, :data, :receipts, :id, :created_at, :updated_at]}
 
   defstruct [
     :application,

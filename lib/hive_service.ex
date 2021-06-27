@@ -4,15 +4,21 @@ defmodule HiveService do
   EXPLO's [HIVE](https://bitbucket.org/explo/hive-2) service.
   """
 
+  require Logger
+
   @doc """
   Deletes a HiveAtom from HIVE permanently.  
   """
   @spec delete_atom(integer()) :: map()
   def delete_atom(atom_id) do
-    body = URI.encode_query(%{token: api_token()})
-    endpoint = "#{api_url()}/atoms/#{atom_id}"
+    if debug_mode?() do
+      debug(:delete, atom_id)
+    else
+      body = URI.encode_query(%{token: api_token()})
+      endpoint = "#{api_url()}/atoms/#{atom_id}"
 
-    delete(endpoint, body)
+      delete(endpoint, body)
+    end
   end
 
   @doc """
@@ -20,11 +26,15 @@ defmodule HiveService do
   """
   @spec delete_receipt(integer(), String.t()) :: HiveAtom.t()
   def delete_receipt(atom_id, application) do
-    body = URI.encode_query(%{token: api_token()})
-    endpoint = "#{api_url()}/atoms/#{atom_id}/receipts/#{application}"
+    if debug_mode?() do
+      debug(:delete_receipt, {application, atom_id})
+    else
+      body = URI.encode_query(%{token: api_token()})
+      endpoint = "#{api_url()}/atoms/#{atom_id}/receipts/#{application}"
 
-    delete(endpoint, body)
-    |> convert_maps_to_hiveatoms()
+      delete(endpoint, body)
+      |> convert_maps_to_hiveatoms()
+    end
   end
 
 
@@ -105,19 +115,33 @@ defmodule HiveService do
   Add a HiveAtom to HIVE
   """
   @spec post_atom(String.t(), String.t(), String.t(), String.t()) :: HiveAtom.t()
-  def post_atom(application, context, process, data) do
-    body =
-      URI.encode_query(%{
-        token: api_token(),
-        application: application,
-        context: context,
-        process: process,
-        data: data
-      })
+  def post_atom(application, context, process, data) when is_binary(data) do
+    params = %{
+      token: api_token(),
+      application: application,
+      context: context,
+      process: process,
+      data: data
+    }
 
-    endpoint = "#{api_url()}/atoms"
+    if debug_mode?() do
+      debug(:post, params)
+    else
+      body = URI.encode_query(params)
+      endpoint = "#{api_url()}/atoms"
 
-    post(endpoint, body)
+      post(endpoint, body)
+    end
+  end
+
+  @spec post_atom(String.t(), String.t(), String.t(), map()) :: HiveAtom.t()
+  def post_atom(application, context, process, data) when is_map(data) do
+    with {:ok, bin} <- Jason.encode(data) do
+      post_atom(application, context, process, bin)
+    else
+      _ -> 
+        Logger.warn("HIVE Service: Failed to encode data for {#{application}, #{context}, #{process}, #{inspect data}}")
+    end
   end
 
   @doc """
@@ -151,26 +175,23 @@ defmodule HiveService do
   end
 
   defp api_url do
-    Application.get_env(:hive_service, :hive_api_url) ||
-      "https://hive.explo.org"
+    Application.get_env(:hive_service, :hive_api_url, "https://hive.explo.org")
   end
 
   defp convert_maps_to_hiveatoms(map_list) when is_list(map_list) do
-    map_list |> Enum.map(&HiveAtom.from_map/1)
+    map_list |> Enum.map(&convert_maps_to_hiveatoms/1)
   end
 
   defp convert_maps_to_hiveatoms(map) when is_map(map) do
     HiveAtom.from_map(map)
   end
 
-  defp run_unless_auth_error(response, fun) do
-    case response.status_code == 401 or
-           response.body
-           |> String.downcase()
-           |> String.contains?("unauthorized") do
-      true -> {:error, :authentication}
-      false -> fun.(response)
-    end
+  defp debug(mode, body) do
+    IO.puts "HIVE Service DEBUG (#{mode}): #{inspect body}"
+  end
+
+  defp debug_mode? do
+    Application.get_env(:hive_service, :debug_mode, false)
   end
 
   defp delete(endpoint, body) do
@@ -203,5 +224,15 @@ defmodule HiveService do
       |> Jason.decode!()
       |> convert_maps_to_hiveatoms()
     end)
+  end
+
+  defp run_unless_auth_error(response, fun) do
+    case response.status_code == 401 or
+           response.body
+           |> String.downcase()
+           |> String.contains?("unauthorized") do
+      true -> {:error, :authentication}
+      false -> fun.(response)
+    end
   end
 end

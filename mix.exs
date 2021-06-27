@@ -4,7 +4,7 @@ defmodule HiveService.Mixfile do
   def project do
     [
       app: :hive_service,
-      version: "1.1.0",
+      version: "1.2.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       deps: deps(),

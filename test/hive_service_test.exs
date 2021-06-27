@@ -52,6 +52,22 @@ defmodule HiveServiceTest do
       assert %{"success" => true} = delete_result
     end
 
+    test "posting an atom with a data map" do
+      struct = %HiveAtom{
+        application: "meta",
+        context: "inception",
+        process: "leonardo dicaprio",
+        data: "👁"
+      }
+
+      returned_atom = HiveService.post_atom("test", "test", "test", struct)
+
+      assert returned_atom.application == "test"
+      assert %{"application" => "meta"} = HiveAtom.data_map(returned_atom)
+
+      HiveService.delete_atom(returned_atom.id)
+    end
+
     test "sending + receiving wacky characters", %{atom: atom} do
       test_string = "🖤äéíøü🤷😂"
 
