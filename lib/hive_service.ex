@@ -221,7 +221,7 @@ defmodule HiveService do
     |> HTTPoison.post!(body, headers())
     |> run_unless_auth_error(fn response ->
       response.body
-      |> Jason.decode()
+      |> Jason.decode!()
       |> convert_maps_to_hiveatoms()
     end)
   end
