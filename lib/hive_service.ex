@@ -217,10 +217,11 @@ defmodule HiveService do
   end
 
   defp post(endpoint, body) do
+    IO.puts("at endpoint: #{endpoint}")
     endpoint
     |> HTTPoison.post!(body, headers())
     |> run_unless_auth_error(fn response ->
-      IO.puts(response.body)
+      IO.puts("got back: #{response.body}")
       response.body
       |> Jason.decode!()
       |> convert_maps_to_hiveatoms()
