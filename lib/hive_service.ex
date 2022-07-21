@@ -129,9 +129,6 @@ defmodule HiveService do
     else
       body = URI.encode_query(params)
       endpoint = "#{api_url()}/atoms"
-      
-      IO.puts(body)
-      IO.puts(endpoint)
 
       post(endpoint, body)
     end
